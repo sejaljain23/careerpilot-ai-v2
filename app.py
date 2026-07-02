@@ -12,6 +12,7 @@ from agents.manager_agent import ManagerAgent
 from memory.session_memory import SessionMemory
 import memory.session_memory as sm
 
+from utils.pdf_report import create_pdf_report
 
 
 from adk.career_adk import start_adk
@@ -134,43 +135,56 @@ Upload your resume in **PDF format** and receive an AI-powered evaluation.
 
         if st.button("Analyze Resume", key="analyze_resume"):
 
-         st.subheader("📄 Resume Text")
+            st.subheader("📄 Resume Text")
 
-        st.text_area(
-            "Extracted Text",
-            resume_text,
-            height=300
-        )
+            st.text_area(
+                "Extracted Text",
+                resume_text,
+                height=300
+            )
 
-        with st.spinner("🤖 Analyzing Resume..."):
+            with st.spinner("🤖 Analyzing Resume..."):
+                analysis = resume_agent.analyze(resume_text)
 
-         analysis = resume_agent.analyze(resume_text)
+            st.subheader("📊 AI Resume Analysis")
 
-        st.subheader("📊 AI Resume Analysis")
+            with st.expander("📄 View Complete AI Analysis", expanded=True):
+                st.markdown(analysis)
 
-        with st.expander("📄 View Complete AI Analysis", expanded=True):
-         st.markdown(analysis)
+            match = re.search(r'(\d{1,3})\s*/\s*100', analysis)
 
+            if match:
+                ats_score = int(match.group(1))
+            else:
+                ats_score = 80
 
-        match = re.search(r'(\d{1,3})\s*/\s*100', analysis)
+            col1, col2 = st.columns([1, 2])
 
-        if match:
-            ats_score = int(match.group(1))
-        else:
-            ats_score = 80
+            with col1:
+                st.metric(
+                    label="📊 ATS Score",
+                    value=f"{ats_score}/100"
+                )
 
-        col1, col2 = st.columns([1, 2])
+            with col2:
+                st.write("### ATS Progress")
+                st.progress(ats_score / 100)
 
-with col1:
-    st.metric(
-        label="📊 ATS Score",
-        value=f"{ats_score}/100"
-    )
+            pdf_file = "CareerPilot_Report.pdf"
 
-with col2:
-    st.write("### ATS Progress")
-    st.progress(ats_score / 100)
-      
+            create_pdf_report(
+                pdf_file,
+                analysis,
+                ats_score
+            )
+
+            with open(pdf_file, "rb") as file:
+                st.download_button(
+                    label="📥 Download PDF Report",
+                    data=file,
+                    file_name="CareerPilot_Report.pdf",
+                    mime="application/pdf"
+                )
 
 with tab2:
 

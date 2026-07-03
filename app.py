@@ -128,12 +128,25 @@ Upload your resume in **PDF format** and receive an AI-powered evaluation.
 
     if uploaded_file is not None:
 
-        resume_text = extract_text_from_pdf(uploaded_file)
+         st.success(f"✅ Resume '{uploaded_file.name}' uploaded successfully!")
+         st.write("**Filename:**", uploaded_file.name)
 
-        st.success(f"✅ Resume '{uploaded_file.name}' uploaded successfully!")
-        st.write("**Filename:**", uploaded_file.name)
+         try:
+            resume_text = extract_text_from_pdf(uploaded_file)
 
-        if st.button("Analyze Resume", key="analyze_resume"):
+            st.success("✅ PDF text extracted successfully!")
+
+            st.text_area(
+            "First 500 Characters",
+            resume_text[:500],
+            height=200
+        )
+
+         except Exception as e:
+           st.error(f"❌ PDF Extraction Error: {e}")
+           st.stop()
+
+         if st.button("Analyze Resume", key="analyze_resume"):
 
             st.subheader("📄 Resume Text")
 

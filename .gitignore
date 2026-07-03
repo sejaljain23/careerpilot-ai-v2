@@ -2,21 +2,32 @@
 __pycache__/
 *.py[cod]
 *.pyo
+*.pyd
 
 # Virtual Environment
 venv/
+.env/
+
+# Environment Variables
 .env
 
-# Streamlit
-.streamlit/
+# Streamlit cache
+.streamlit/secrets.toml
 
-# IDE
+# VS Code
 .vscode/
-.idea/
 
-# OS files
+# macOS
 .DS_Store
+
+# Windows
 Thumbs.db
 
-# Generated PDF Reports
+# Generated reports
 CareerPilot_Report.pdf
+
+# Uploads
+uploads/
+
+# Python cache
+.pytest_cache/

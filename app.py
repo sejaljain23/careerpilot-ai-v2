@@ -38,6 +38,20 @@ st.set_page_config(
 )
 
 st.title("🚀 CareerPilot AI")
+
+st.header("🧪 Upload Test")
+
+test_file = st.file_uploader(
+    "Test PDF Upload",
+    type=["pdf"],
+    key="test_upload"
+)
+
+if test_file is not None:
+    st.success("✅ Test upload successful!")
+    st.write(test_file.name)
+
+
 st.markdown("""
 ### Your AI-Powered Career Guidance Platform
 

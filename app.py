@@ -26,7 +26,7 @@ manager_agent = ManagerAgent()
 
 if "memory" not in st.session_state:
     st.session_state.memory = SessionMemory()
-
+ 
 memory = st.session_state.memory
 
 st.set_page_config(

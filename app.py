@@ -29,13 +29,13 @@ if "memory" not in st.session_state:
 
 memory = st.session_state.memory
 
-st.write(dir(memory))
-
 st.set_page_config(
     page_title="CareerPilot AI",
     page_icon="🚀",
     layout="wide"
 )
+
+st.write(dir(memory))
 
 st.title("🚀 CareerPilot AI")
 

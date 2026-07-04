@@ -1,13 +1,18 @@
 import asyncio
 import traceback
+import os
 from fastmcp import Client
 
-
-SERVER_PATH = r"C:\Users\jains\OneDrive\Documents\CareerPilot-AI\careerpilot_mcp\server.py"
+# Path to the MCP server inside the project
+SERVER_PATH = os.path.join(
+    os.path.dirname(__file__),
+    "server.py"
+)
 
 async def _call(tool_name: str, args: dict):
     try:
-        async with Client(SERVER_PATH) as client:
+        # Explicitly run the server over stdio
+        async with Client(f"python {SERVER_PATH}") as client:
             result = await client.call_tool(tool_name, args)
 
             if hasattr(result, "data"):

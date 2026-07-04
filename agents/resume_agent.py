@@ -1,21 +1,17 @@
-from services.gemini_service import generate_response
-from utils.prompts import RESUME_PROMPT
+from careerpilot_mcp.client import call_tool
 
 
 class ResumeAgent:
 
     def analyze(self, resume_text):
 
-        prompt = f"""
-{RESUME_PROMPT}
-
-Resume:
-
-{resume_text}
-"""
-
         try:
-            return generate_response(prompt)
+            return call_tool(
+                "resume_analysis",
+                {
+                    "resume_text": resume_text
+                }
+            )
 
         except Exception as e:
             return f"⚠️ Resume Agent Error:\n\n{e}"

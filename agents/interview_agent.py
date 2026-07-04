@@ -1,21 +1,17 @@
-from services.gemini_service import generate_response
-from utils.prompts import INTERVIEW_PROMPT
+from careerpilot_mcp.client import call_tool
 
 
 class InterviewAgent:
 
     def generate_questions(self, role):
 
-        prompt = f"""
-{INTERVIEW_PROMPT}
-
-Job Role:
-
-{role}
-"""
-
         try:
-            return generate_response(prompt)
+            return call_tool(
+                "interview_questions",
+                {
+                    "role": role
+                }
+            )
 
         except Exception as e:
             return f"⚠️ Interview Agent Error:\n\n{e}"

@@ -4,25 +4,16 @@ from dotenv import load_dotenv
 
 from tools.pdf_reader import extract_text_from_pdf
 
-from agents.resume_agent import ResumeAgent
-from agents.career_agent import CareerAgent
-from agents.interview_agent import InterviewAgent
-from agents.manager_agent import ManagerAgent
-
 from memory.session_memory import SessionMemory
 import memory.session_memory as sm
 
 from utils.pdf_report import create_pdf_report
-
-
 from adk.career_adk import start_adk
+from careerpilot_mcp.client import call_tool
+
 
 load_dotenv()
 
-resume_agent = ResumeAgent()
-career_agent = CareerAgent()
-interview_agent = InterviewAgent()
-manager_agent = ManagerAgent()
 
 if "memory" not in st.session_state:
     st.session_state.memory = SessionMemory()
@@ -34,8 +25,6 @@ st.set_page_config(
     page_icon="🚀",
     layout="wide"
 )
-
-st.write(dir(memory))
 
 st.title("🚀 CareerPilot AI")
 
@@ -171,7 +160,14 @@ Upload your resume in **PDF format** and receive an AI-powered evaluation.
             )
 
             with st.spinner("🤖 Analyzing Resume..."):
-                analysis = resume_agent.analyze(resume_text)
+                analysis = call_tool(
+                   "resume_analysis",
+                {
+
+                      "resume_text": resume_text
+                }
+    
+    )
 
             st.subheader("📊 AI Resume Analysis")
 
@@ -241,15 +237,17 @@ with tab2:
                     memory.save("last_query", user_query)
                     memory.add_history(user_query)
 
-                    st.write("History:", memory.get_history())
-
                     if "i want to become" in user_query.lower():
                         memory.save("career_goal", user_query)
 
-                    if uploaded_file and resume_text:
-                        answer = manager_agent.route(user_query, resume_text)
-                    else:
-                        answer = manager_agent.route(user_query)
+                    st.write("History:", memory.get_history())
+
+                    answer = call_tool(
+                      "career_guidance",
+                        {
+                        "career_goal": user_query
+                       }
+     )
 
                     st.success("CareerPilot AI Response")
                     st.markdown(answer)
@@ -295,7 +293,12 @@ with tab3:
 
                 try:
 
-                    questions = interview_agent.generate_questions(role)
+                    questions = call_tool(
+                      "interview_questions",
+                     {
+                        "role": role
+                 }
+)
 
                     st.success("Interview Questions Generated")
                     st.markdown(questions)

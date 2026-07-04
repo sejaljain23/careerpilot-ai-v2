@@ -9,8 +9,13 @@ import memory.session_memory as sm
 
 from utils.pdf_report import create_pdf_report
 from adk.career_adk import start_adk
-from careerpilot_mcp.client import call_tool
 
+from services.gemini_service import generate_response
+from utils.prompts import (
+    RESUME_PROMPT,
+    CAREER_PROMPT,
+    INTERVIEW_PROMPT,
+)
 
 load_dotenv()
 
@@ -160,15 +165,12 @@ Upload your resume in **PDF format** and receive an AI-powered evaluation.
             )
 
             with st.spinner("🤖 Analyzing Resume..."):
-                analysis = call_tool(
-                   "resume_analysis",
-                {
+               
 
-                      "resume_text": resume_text
-                }
-    
+                analysis = generate_response(
+                   f"{RESUME_PROMPT}\n\nResume:\n\n{resume_text}"
     )
-
+                
             st.subheader("📊 AI Resume Analysis")
 
             with st.expander("📄 View Complete AI Analysis", expanded=True):
@@ -242,12 +244,12 @@ with tab2:
 
                     st.write("History:", memory.get_history())
 
-                    answer = call_tool(
-                      "career_guidance",
-                        {
-                        "career_goal": user_query
-                       }
-     )
+              
+
+                    answer = generate_response(
+                         f"{CAREER_PROMPT}\n\nCareer Goal:\n\n{user_query}"
+                )
+
 
                     st.success("CareerPilot AI Response")
                     st.markdown(answer)
@@ -284,27 +286,25 @@ with tab3:
         placeholder="Example: Data Analyst",
         key="interview_role"
     )
+if st.button("Generate Interview Questions", key="interview_btn"):
 
-    if st.button("Generate Interview Questions", key="interview_btn"):
+    if role:
 
-        if role:
+        with st.spinner("🤖 Generating Interview Questions..."):
 
-            with st.spinner("🤖 Generating Interview Questions..."):
+            try:
 
-                try:
+                questions = generate_response(
+                    f"{INTERVIEW_PROMPT}\n\nRole:\n\n{role}"
+                )
 
-                    questions = call_tool(
-                      "interview_questions",
-                     {
-                        "role": role
-                 }
-)
+                st.success("Interview Questions Generated")
+                st.markdown(questions)
 
-                    st.success("Interview Questions Generated")
-                    st.markdown(questions)
+            except Exception as e:
+                st.error(f"⚠️ Error: {e}")
 
-                except Exception as e:
-                    st.error(f"⚠️ Error: {e}")
+
 
     
 with tab4:
